@@ -26,7 +26,7 @@ public class process {
 	public process() {
 		pid = -1;
 		priority = 0;
-		data  = null;
+		data  = new char[1024]; //arbitrary buffer..for now
 		state_new = true;
 		state_ready = false;
 		state_running = false;
