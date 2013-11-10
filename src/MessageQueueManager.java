@@ -1,24 +1,28 @@
 import java.util.Hashtable;
 
-public class MessageQueueManagement {
-	
+public class MessageQueueManager {
+
 	public Hashtable<Integer,MessageQueue> queues;
 	public int numQueues = 0;
-	
-	public MessageQueueManagement()
+	public int maxQueues = 1024;
+
+	public MessageQueueManager()
 	{
 		this.queues = new Hashtable<Integer,MessageQueue>();
 	}
-	
-	public MessageQueue createQueue()
+
+	public String createQueue()
 	{
-		MessageQueue newQueue = new MessageQueue();
+		if (this.numQueues >= this.maxQueues)
+			return null;
+
+		MessageQueue newQueue = new MessageQueue(this.numQueues);
 		this.queues.put(numQueues, newQueue);
 		this.numQueues++;
-		
-		return newQueue;
+
+		return newQueue.id;
 	}
-	
+
 	public MessageQueue getQueue(int id)
 	{
 		if (this.queues.containsKey((Integer)id))
@@ -26,11 +30,11 @@ public class MessageQueueManagement {
 		else
 			return null;
 	}
-	
+
 	public void deleteQueue(int id)
 	{
 		if (this.queues.containsKey((Integer)id))
 			this.queues.remove((Integer)id);
 	}
-	
+
 }
