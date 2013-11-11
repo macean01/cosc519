@@ -25,13 +25,14 @@ public class process {
 
         
         
-        public boolean recMessage(){
+        public boolean recMessage(){//this will call pop() on the Message Queue
         
                 
         	//retrieve a message from the message queue
         	
         	if(message_queue.notEmpty()){
-	        	message rec_message = message_queue.consumeItem();
+	        	message rec_message = message_queue.consumeItem();//placeholder
+	        	
 	        	processMessage(rec_message); //store the recieved message in the buffer -- not sure if this is necessary
         	}
         	else{
@@ -50,12 +51,12 @@ public class process {
         	}
         }
         
-        public void sendMessageToQueue(char[] data, process target){
+        public void sendMessageToQueue(char[] data, process target){ //this will call write() in the MessageQueue class
         		//send a message out to the message queue
         		message send_message = new message(data, target.pid, this.pid);
        
         		
-        		message_queue.addItem(send_message);
+        		message_queue.addItem(send_message);//placeholder
         		
                 //send message out to the queue
                 //queue should contain Message objects that contain a data portion and target (PID?)
