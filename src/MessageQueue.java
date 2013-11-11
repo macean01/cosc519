@@ -4,22 +4,22 @@ import java.util.LinkedList;
 public class MessageQueue {
 
 	String id;
-	LinkedList<String> list;
+	LinkedList<Message> list;
 	int messages = 0;
 
 	public MessageQueue(int id)
 	{
 		this.id = ((Integer)id).toString();
-		list = new LinkedList<String>();
+		list = new LinkedList<Message>();
 	}
 
-	public void write(String buff)
+	public void write(Message buff)
 	{
 		list.push(buff);
 		messages++;
 	}
 
-	public String read()
+	public Message read()
 	{
 		if (messages > 0) {
 			messages--;
