@@ -6,6 +6,7 @@ public class MessageQueue {
 	String id;
 	LinkedList<Message> list;
 	int messages = 0;
+	boolean lock = false;
 
 	public MessageQueue(int id)
 	{

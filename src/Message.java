@@ -1,11 +1,11 @@
 
 public class Message {
 
-        
+
         char[] message_data;
         int to_pid;
         int from_pid;
-        
+
         public Message(){
                 message_data = null;
                 to_pid = -1;
@@ -34,5 +34,5 @@ public class Message {
                 public void setFrom_pid(int from_pid) {
                         this.from_pid = from_pid;
                 }
-        
+
 }

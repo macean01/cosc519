@@ -13,7 +13,7 @@ public class Driver {
 			mqm.createQueue();
 
 		for (int i = 0; i < numQueues; i++)
-			mqm.deleteQueue(i);
+			;//mqm.deleteQueue(i);
 
 
 	}
