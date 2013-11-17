@@ -3,7 +3,6 @@ public class MessageLock {
 
     private int numWriters;
     private int numReaders;
-    //private
 
     public MessageLock() {
         numWriters = 0;
