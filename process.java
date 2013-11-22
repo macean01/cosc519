@@ -21,7 +21,7 @@ public class process {
         //constructor
         public process(int new_pid) { //have to pass mqm  after we create a process, because processes are created in the ProcessControl class, which has no knowledge of a mqm
         	
-                pid = 0; //each time we create a process, we need to increment pid....we will use the pid variable to determine what queue to read/write from (Pn writes to Qn), (Pn reads Qn+1)
+                pid = new_pid; //each time we create a process, we need to increment pid....we will use the pid variable to determine what queue to read/write from (Pn writes to Qn), (Pn reads Qn+1)
                // priority = 0;
                 data  = ""; 
 
@@ -35,7 +35,7 @@ public class process {
         
         
         
-        //Note: Will there be an issue with receive and send?  Consider if we delete a messageQueue, will this still work (with pid, and pid+1)?
+        
         public String receiveMessage(){//this will call pop() on the Message Queue
         
         	Message result = mqm.read(pid+1+"");//Pn , reads from Qn+1, where n is the PID (PIDs start at 0 and increment by 1, so this should work correctly with the MQM indices 
