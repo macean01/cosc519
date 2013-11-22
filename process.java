@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class process {
         
         
@@ -8,58 +10,52 @@ public class process {
 	
 	
 	
-        int pid; //pid set where? not here
-        int priority;//might be unnecessary
+        int pid; 
+        int priority;
         
-        char[] data; //received message data goes here? -- considering String type
+        String data; 
         
+        MessageQueueManager mqm; //connect the MQM from the Driver to the process...All processes share the same MQM
         
         
         //constructor
-        public process() {
-                pid = -1;
-                priority = 0;
-                data  = new char[1024]; //arbitrary buffer..for now
+        public process(int new_pid) { //have to pass mqm  after we create a process, because processes are created in the ProcessControl class, which has no knowledge of a mqm
+        	
+                pid = 0; //each time we create a process, we need to increment pid....we will use the pid variable to determine what queue to read/write from (Pn writes to Qn), (Pn reads Qn+1)
+               // priority = 0;
+                data  = ""; 
 
         }
 
         
+        //Connect MQM 
+        public void setMessageQueueManager(MessageQueueManager newMQM){ 
+        	this.mqm = newMQM;
+        }
         
-        public boolean recMessage(){//this will call pop() on the Message Queue
         
-                
+        
+        //Note: Will there be an issue with receive and send?  Consider if we delete a messageQueue, will this still work (with pid, and pid+1)?
+        public String receiveMessage(){//this will call pop() on the Message Queue
+        
+        	Message result = mqm.read(pid+1+"");//Pn , reads from Qn+1, where n is the PID (PIDs start at 0 and increment by 1, so this should work correctly with the MQM indices 
+        	
+              
+        	return result.getMessage_data();
         	//retrieve a message from the message queue
-        	
-        	if(message_queue.notEmpty()){
-	        	message rec_message = message_queue.consumeItem();//placeholder
-	        	
-	        	processMessage(rec_message); //store the recieved message in the buffer -- not sure if this is necessary
-        	}
-        	else{
-        		System.out.println("  [*] Message Queue Empty");
-        	}
-        	
-        	//there will need be some kind of controller for processes that waits to receive messages that runs this func
-                
+
+                        
         }
         
-        //copy over data from a message to a process' buffer
-        public void processMessage(message msg){
-        	char[] data_to_get = msg.getMessage_data();
-        	for(int i=0;i<data_to_get.length;i++){
-        		data[i] = data_to_get[i];//copy over data to the process' buffer
-        	}
-        }
+
         
-        public void sendMessageToQueue(char[] data, process target){ //this will call write() in the MessageQueue class
+        public void sendMessageToQueue(String data, process target){ //this will call write() in the MessageQueue class
         		//send a message out to the message queue
-        		message send_message = new message(data, target.pid, this.pid);
+        		Message send_message = new Message();
        
         		
-        		message_queue.addItem(send_message);//placeholder
-        		
+        		mqm.write(pid+"", send_message); // Pn writes to Qn, we can use PID as n
                 //send message out to the queue
-                //queue should contain Message objects that contain a data portion and target (PID?)
         }
  
         
