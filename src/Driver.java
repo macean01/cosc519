@@ -6,16 +6,18 @@ public class Driver {
 	 */
 	public static void main(String[] args) {
 
-		int numQueues = 512;
-
 		MessageQueueManager mqm = new MessageQueueManager();
-		for (int i = 0; i < numQueues; i++)
-			mqm.createQueue();
 
-		for (int i = 0; i < numQueues; i++)
-			;//mqm.deleteQueue(i);
+		String msq1 = mqm.createQueue();
+		String msq2 = mqm.createQueue();
+		String msq3 = mqm.createQueue();
 
+		ProcessControl pc = new ProcessControl();
+		pc.createProcess(mqm, msq1, msq2);
+		pc.createProcess(mqm, msq2, msq3);
+		pc.createProcess(mqm, msq3, msq1);
 
+		pc.startProcesses();
 	}
 
 }

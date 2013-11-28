@@ -28,7 +28,7 @@ public class MessageQueueManager {
 		if (this.queues.containsKey(id))
 			this.queues.remove(id);
 	}
-	
+
 	public void write(String messageQueue, Message message)
 	{
 		if (this.queues.containsKey(messageQueue) == false)
@@ -36,7 +36,7 @@ public class MessageQueueManager {
 		else
 			this.queues.get(messageQueue).write(message);
 	}
-	
+
 	public Message read(String messageQueue)
 	{
 		if (this.queues.containsKey(messageQueue) == false)
