@@ -1,21 +1,106 @@
+import java.io.*;
 
 public class Driver {
 
-	/**
-	 * @param args
-	 */
+	static int numProcs;
+	static Process[] myProcs;
+	static int BufferSize;
+	static int PatternSelection;
+
 	public static void main(String[] args) {
 
-		int numQueues = 512;
+		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(
+				System.in));
 
-		MessageQueueManager mqm = new MessageQueueManager();
-		for (int i = 0; i < numQueues; i++)
-			mqm.createQueue();
+		String Choice = "";
 
-		for (int i = 0; i < numQueues; i++)
-			;//mqm.deleteQueue(i);
+		while (!Choice.equals("done")) {
+			System.out.println("COSC519 Message Queue Project Main Menu:\n"
+					+ "1. Set Proccess Number\n"
+					+ "2. Set Message Passing Pattern\n"
+					+ "3. Set Proccess Buffer Size\n" + "4. Start\n"
+					+ "5. Print MessageQueues");
+			try {
 
+				Choice = bufferRead.readLine();
+				switch (Choice) {
+				case "1":
+					SetProcessNumber(bufferRead);
+					break;
+				case "2":
+					SetPattern(bufferRead);
+					break;
+				case "3":
+					SetBufferSize(bufferRead);
+					break;
+				case "4":
+					Start();
+					break;
 
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		// print outcome of test
+		// parameters of test
+		// # of messages passed
+		// # of buffer overflows
 	}
 
+	private static void SetBufferSize(BufferedReader reader) {
+
+		System.out.print("Please Enter Buffer Size:");
+		try {
+			BufferSize = Integer.parseInt(reader.readLine());
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void SetPattern(BufferedReader reader) {
+
+		System.out.print("Please Enter Pattern Configuration:");
+		try {
+			int patternSelection = Integer.parseInt(reader.readLine());
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void Start() {
+
+		if (numProcs > 0 && BufferSize > 0 && PatternSelection > 0) {
+
+			MessageQueueManager mqm = new MessageQueueManager();
+			PatternCalculation myCalc = new PatternCalculation(mqm, PatternSelection);
+			for (int i = 0; i < numProcs; i++) {
+				myProcs[i] = new Process(i, 1, BufferSize, mqm);
+			}
+			myCalc.CalculatePattern(myProcs);
+			for(int i = 0; i< myProcs.length;i++){
+				myProcs[i].run();
+			}
+		}
+		else{
+			System.out.println("\n\nPlease Set all parameters before initiating the test!\n\n");
+		}
+	}
+
+	private static void SetProcessNumber(BufferedReader reader) {
+
+		System.out.print("Please Enter Process Number:");
+		try {
+			numProcs = Integer.parseInt(reader.readLine());
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
