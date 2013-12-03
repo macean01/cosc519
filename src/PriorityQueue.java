@@ -103,12 +103,11 @@ public class PriorityQueue<E> {
                     int insertHere = getInsertionIndex(priority);
                     incrementIndices(priority);
                     insertBefore(data, insertHere);
-
                 }
             }
         }
 
-        printIndices();
+        //printIndices();
     }
 
     public QueueItem dequeue(){
@@ -120,33 +119,24 @@ public class PriorityQueue<E> {
             tail = null;
             priorityIndices.clear();
         } else {
+
             head = head.getNext();
 
-            TreeMap tempIndices = new TreeMap<Integer, Integer>();
-            tempIndices = priorityIndices;
-
             int priority = priorityIndices.lastKey();
+            Index index = priorityIndices.get(priority);
 
-            tempIndices.remove(priority);
+            index.decrementLastIndex();
 
-            Map.Entry<Integer,Integer> entry = tempIndices.lastEntry();
+            int first = index.getFirstIndex();
+            int last = index.getLastIndex();
 
-            int secondPriority = entry.getKey();
-            int secondIndex = entry.getValue();
+            if (last < first)
+                priorityIndices.remove(priority);
+            else
+                priorityIndices.put(priority, index);
 
-            if (secondIndex > 2) {
-                System.out.println("Got here");
-            }
-
-
-
+            decrementIndices(priority);
         }
-
-
-
-
-
-
 
         length--;
         return oldHead;
@@ -209,6 +199,20 @@ public class PriorityQueue<E> {
         }
     }
 
+    public void decrementIndices(int priority) {
+
+        for (Map.Entry<Integer, Index> entry : priorityIndices.entrySet()) {
+
+            int currentPriority = entry.getKey();
+            Index index = entry.getValue();
+
+            if (currentPriority < priority) {
+                index.decrementBothIndices();
+                priorityIndices.put(currentPriority, index);
+            }
+        }
+    }
+
     public int getInsertionIndex(int priority) {
 
         Index index = new Index();
@@ -228,6 +232,4 @@ public class PriorityQueue<E> {
         return index.getFirstIndex();
 
     }
-
-
 }
