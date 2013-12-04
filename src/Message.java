@@ -16,4 +16,7 @@ public class Message {
         public void setMessage_data(String message_data) {
         	this.message_data = message_data;
         }
+        public String toString() {
+        	return this.message_data;
+        }
 }

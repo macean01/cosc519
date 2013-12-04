@@ -34,4 +34,18 @@ public class MessageQueue {
 	{
 		return messages > 0;
 	}
+
+	public String toString()
+	{
+		String ret = "";
+
+		if (this.list.isEmpty())
+			return "empty";
+
+		for (Message message : this.list) {
+			ret += message + "\t";
+		}
+
+		return ret;
+	}
 }

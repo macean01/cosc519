@@ -1,4 +1,6 @@
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Set;
 
 public class MessageQueueManager {
 
@@ -43,5 +45,19 @@ public class MessageQueueManager {
 			return null;
 		else
 			return this.queues.get(messageQueue).read();
+	}
+
+	public String toString()
+	{
+		String ret = "";
+
+		Set<String> keys = this.queues.keySet();
+		for (String key : keys) {
+			ret += "Message queue: " + key + " " + this.queues.get(key) + "\n";
+		}
+
+		ret += "\n";
+
+		return ret;
 	}
 }
