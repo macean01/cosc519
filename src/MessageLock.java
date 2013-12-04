@@ -1,22 +1,51 @@
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class MessageLock {
 
-    private int numWriters;
-    private int numReaders;
+    private AtomicInteger numWritersWaiting = new AtomicInteger(0);
 
-    public MessageLock() {
-        numWriters = 0;
-        numReaders = 0;
+    private final Lock lock = new ReentrantLock();
+    private final Condition writersWaiting = lock.newCondition();
+    private final Condition readerReading = lock.newCondition();
+
+
+    public void readLock() throws InterruptedException {
+
+        try {
+            while (numWritersWaiting.get() > 0) {
+                writersWaiting.await();
+            }
+        } finally {
+            lock.lock();
+        }
+
     }
 
-    public MessageLock(int _numWriters, int _numReaders) {
-        if (_numWriters < 0)
-            throw new IllegalArgumentException(numWriters + " < 0");
-        if (_numReaders < 0)
-            throw new IllegalArgumentException(numReaders + " < 0");
-        numWriters = _numWriters;
-        numReaders = _numReaders;
+    public void readUnlock() {
+
+        readerReading.signal();
+        lock.unlock();
     }
 
+    public void writeLock() throws InterruptedException {
 
+        numWritersWaiting.incrementAndGet();
+
+        try {
+            readerReading.await();
+        } finally {
+            lock.lock();
+        }
+    }
+
+    public void writeUnlock() {
+
+        numWritersWaiting.decrementAndGet();
+        writersWaiting.signal();
+        lock.unlock();
+
+    }
 }

@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 import java.io.*;
 
+=======
+>>>>>>> upstream/master
 public class Driver {
 
 	static int numProcs;
@@ -9,6 +12,7 @@ public class Driver {
 
 	public static void main(String[] args) {
 
+<<<<<<< HEAD
 		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(
 				System.in));
 
@@ -90,6 +94,22 @@ public class Driver {
 		else{
 			System.out.println("\n\nPlease Set all parameters before initiating the test!\n\n");
 		}
+=======
+		MessageQueueManager mqm = new MessageQueueManager();
+
+		String msq1 = mqm.createQueue();
+		String msq2 = mqm.createQueue();
+		String msq3 = mqm.createQueue();
+
+		ProcessControl pc = new ProcessControl();
+		pc.createProcess(mqm, msq1, msq2, 8);
+		pc.createProcess(mqm, msq2, msq3, 8);
+		pc.createProcess(mqm, msq3, msq1, 8);
+
+		pc.startProcesses();
+
+		//System.out.print(mqm);
+>>>>>>> upstream/master
 	}
 
 	private static void SetProcessNumber(BufferedReader reader) {
