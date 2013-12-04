@@ -6,20 +6,20 @@ public class PriorityQueue<E> {
     private QueueItem head;
     private QueueItem tail;
     private int length;
-    private TreeMap<Integer, Integer> priorityIndices;
+    private TreeMap<Integer, Index> priorityIndices;
 
     public PriorityQueue() {
         head = null;
         tail = null;
         length = 0;
-        priorityIndices = new TreeMap<Integer, Integer>();
+        priorityIndices = new TreeMap<Integer, Index>();
     }
 
     public PriorityQueue(E data) {
         QueueItem newItem = new QueueItem(data, null);
         head = newItem;
         tail = newItem;
-        priorityIndices = new TreeMap<Integer, Integer>();
+        priorityIndices = new TreeMap<Integer, Index>();
         length = 1;
     }
 
@@ -35,7 +35,7 @@ public class PriorityQueue<E> {
         return (length == 0);
     }
 
-    public void enqueue(E data) {
+    private void append(E data) {
 
         QueueItem newItem = new QueueItem(data, null);
 
@@ -52,70 +52,62 @@ public class PriorityQueue<E> {
 
     public void enqueue(E data, int priority) {
 
-        int key = 0;
-        int firstIndex = 0;
+        Index index = new Index();
 
         boolean foundKey = priorityIndices.containsKey(priority);
 
         if (priorityIndices.isEmpty()) {
-            priorityIndices.put(priority, 1);
-            enqueue(data);
+            Index newIndex = new Index(1, 1);
+            priorityIndices.put(priority, newIndex);
+            append(data);
         } else {
 
-            for (Map.Entry<Integer,Integer> entry : priorityIndices.entrySet()) {
-
-                key = entry.getKey();
-                firstIndex = entry.getValue();
-
-                if (priority < key) {
-                    break;
-                }
-            }
-
-            if (priority < priorityIndices.lastKey())
-                firstIndex++;
-
             if (!foundKey) {
-                priorityIndices.put(priority, firstIndex);
 
-                if (firstIndex > length)
-                    enqueue(data);
-                else
-                    insertBefore(data, firstIndex);
+                if (priority > priorityIndices.lastKey()) {
+
+                    index = new Index(1,1);
+                    priorityIndices.put(priority, index);
+                    incrementIndices(priority);
+                    insertBefore(data, 1);
+
+                } else if (priority < priorityIndices.firstKey()) {
+
+                    index = priorityIndices.firstEntry().getValue();
+                    int newFirstLast = index.getLastIndex() + 1;
+                    index = new Index(newFirstLast, newFirstLast);
+                    priorityIndices.put(priority, index);
+                    append(data);
+
+                } else {
+
+                    int newFirstLast = getInsertionIndex(priority);
+                    index = new Index(newFirstLast, newFirstLast);
+                    priorityIndices.put(priority, index);
+                    insertBefore(data, newFirstLast);
+                    incrementIndices(priority);
+                }
+
+            } else {
+
+                index = priorityIndices.get(priority);
+                index.incrementLastIndex();
+                priorityIndices.put(priority, index);
+
+                if (priority == priorityIndices.firstKey()) {
+                    append(data);
+                }
 
                 if (priority > priorityIndices.firstKey()) {
 
-                    for (Map.Entry<Integer,Integer> entry : priorityIndices.entrySet()) {
-
-                        int iterKey = entry.getKey();
-                        int oldIndex = entry.getValue();
-
-                        if (iterKey < priority) {
-                            priorityIndices.put(iterKey, ++oldIndex);
-                        }
-                    }
+                    int insertHere = getInsertionIndex(priority);
+                    incrementIndices(priority);
+                    insertBefore(data, insertHere);
                 }
-            } else {
-
-                int insertIndex = 0;
-
-                for (Map.Entry<Integer,Integer> entry : priorityIndices.entrySet()) {
-
-                    int iterKey = entry.getKey();
-                    int oldIndex = entry.getValue();
-
-                    if (iterKey < priority) {
-                        priorityIndices.put(iterKey, ++oldIndex);
-                    }
-
-                    if (oldIndex > firstIndex) {
-                        insertIndex = oldIndex;
-                    }
-                }
-
-                insertBefore(data, (insertIndex - 1));
             }
         }
+
+        //printIndices();
     }
 
     public QueueItem dequeue(){
@@ -125,8 +117,25 @@ public class PriorityQueue<E> {
         if (length == 1) {
             head = null;
             tail = null;
+            priorityIndices.clear();
         } else {
+
             head = head.getNext();
+
+            int priority = priorityIndices.lastKey();
+            Index index = priorityIndices.get(priority);
+
+            index.decrementLastIndex();
+
+            int first = index.getFirstIndex();
+            int last = index.getLastIndex();
+
+            if (last < first)
+                priorityIndices.remove(priority);
+            else
+                priorityIndices.put(priority, index);
+
+            decrementIndices(priority);
         }
 
         length--;
@@ -134,7 +143,7 @@ public class PriorityQueue<E> {
     }
 
 
-    public void insertBefore(E data, int index) {
+    private void insertBefore(E data, int index) {
 
         int count = 1;
         QueueItem previous = head;
@@ -163,17 +172,64 @@ public class PriorityQueue<E> {
 
     public void printIndices(){
 
-        for (Map.Entry<Integer,Integer> entry : priorityIndices.entrySet()) {
+        for (Map.Entry<Integer, Index> entry : priorityIndices.entrySet()) {
 
             int tempKey = entry.getKey();
-            int oldIndex = entry.getValue();
+            Index tempIndex = entry.getValue();
 
             System.out.println("priority = " + tempKey);
-            System.out.println("firstIndex = " + oldIndex);
+            System.out.println("firstIndex = " + tempIndex.getFirstIndex());
+            System.out.println("lastIndex = " + tempIndex.getLastIndex());
             System.out.println();
 
         }
     }
 
+    public void incrementIndices(int priority) {
 
+        for (Map.Entry<Integer, Index> entry : priorityIndices.entrySet()) {
+
+            int currentPriority = entry.getKey();
+            Index index = entry.getValue();
+
+            if (currentPriority < priority) {
+                index.incrementBothIndices();
+                priorityIndices.put(currentPriority, index);
+            }
+        }
+    }
+
+    public void decrementIndices(int priority) {
+
+        for (Map.Entry<Integer, Index> entry : priorityIndices.entrySet()) {
+
+            int currentPriority = entry.getKey();
+            Index index = entry.getValue();
+
+            if (currentPriority < priority) {
+                index.decrementBothIndices();
+                priorityIndices.put(currentPriority, index);
+            }
+        }
+    }
+
+    public int getInsertionIndex(int priority) {
+
+        Index index = new Index();
+
+
+        for (Map.Entry<Integer, Index> entry : priorityIndices.entrySet()) {
+
+            if (entry.getKey() == priority)
+                break;
+
+            if (entry.getKey() > priority)
+                break;
+
+            index = entry.getValue();
+        }
+
+        return index.getFirstIndex();
+
+    }
 }
