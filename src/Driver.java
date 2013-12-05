@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 import java.io.*;
 
-=======
->>>>>>> upstream/master
 public class Driver {
 
 	static int numProcs;
@@ -12,7 +9,6 @@ public class Driver {
 
 	public static void main(String[] args) {
 
-<<<<<<< HEAD
 		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(
 				System.in));
 
@@ -51,6 +47,23 @@ public class Driver {
 		// parameters of test
 		// # of messages passed
 		// # of buffer overflows
+
+		// =======
+		// MessageQueueManager mqm = new MessageQueueManager();
+		//
+		// String msq1 = mqm.createQueue();
+		// String msq2 = mqm.createQueue();
+		// String msq3 = mqm.createQueue();
+		//
+		// ProcessControl pc = new ProcessControl();
+		// pc.createProcess(mqm, msq1, msq2, 8);
+		// pc.createProcess(mqm, msq2, msq3, 8);
+		// pc.createProcess(mqm, msq3, msq1, 8);
+		//
+		// pc.startProcesses();
+		//
+		// //System.out.print(mqm);
+		// >>>>>>> upstream/master
 	}
 
 	private static void SetBufferSize(BufferedReader reader) {
@@ -82,34 +95,13 @@ public class Driver {
 		if (numProcs > 0 && BufferSize > 0 && PatternSelection > 0) {
 
 			MessageQueueManager mqm = new MessageQueueManager();
-			PatternCalculation myCalc = new PatternCalculation(mqm, PatternSelection);
-			for (int i = 0; i < numProcs; i++) {
-				myProcs[i] = new Process(i, 1, BufferSize, mqm);
-			}
-			myCalc.CalculatePattern(myProcs);
-			for(int i = 0; i< myProcs.length;i++){
-				myProcs[i].run();
-			}
+			ProcessControl pc = new ProcessControl();
+			pc.CreateProcesses(PatternSelection, numProcs, mqm);
+			pc.startProcesses();
+		} else {
+			System.out
+					.println("\n\nPlease Set all parameters before initiating the test!\n\n");
 		}
-		else{
-			System.out.println("\n\nPlease Set all parameters before initiating the test!\n\n");
-		}
-=======
-		MessageQueueManager mqm = new MessageQueueManager();
-
-		String msq1 = mqm.createQueue();
-		String msq2 = mqm.createQueue();
-		String msq3 = mqm.createQueue();
-
-		ProcessControl pc = new ProcessControl();
-		pc.createProcess(mqm, msq1, msq2, 8);
-		pc.createProcess(mqm, msq2, msq3, 8);
-		pc.createProcess(mqm, msq3, msq1, 8);
-
-		pc.startProcesses();
-
-		//System.out.print(mqm);
->>>>>>> upstream/master
 	}
 
 	private static void SetProcessNumber(BufferedReader reader) {
