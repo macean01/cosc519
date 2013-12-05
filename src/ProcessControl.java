@@ -37,9 +37,9 @@ public class ProcessControl {
 					String queue2 = mqm.createQueue();
 					createProcess(mqm, queue1, queue2, 8);
 				}
-				else if(i+1 == numProcs){
+				else if(i == numProcs - 1 ){
 					//end
-					processes.get(i).producerId = processes.get(0).consumerId;
+					createProcess(mqm,processes.get(0).consumerId,processes.get(i-1).producerId, 8);
 				}
 				else{
 					//middle

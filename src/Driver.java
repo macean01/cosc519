@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.*;
 
 public class Driver {
 
@@ -11,9 +12,11 @@ public class Driver {
 
 		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(
 				System.in));
+		
+		MessageQueueManager mqm = new MessageQueueManager();
 
 		String Choice = "";
-
+		
 		while (!Choice.equals("done")) {
 			System.out.println("COSC519 Message Queue Project Main Menu:\n"
 					+ "1. Set Proccess Number\n"
@@ -23,20 +26,38 @@ public class Driver {
 			try {
 
 				Choice = bufferRead.readLine();
-				switch (Choice) {
-				case "1":
-					SetProcessNumber(bufferRead);
-					break;
-				case "2":
-					SetPattern(bufferRead);
-					break;
-				case "3":
-					SetBufferSize(bufferRead);
-					break;
-				case "4":
-					Start();
-					break;
 
+				if (Choice.equals("1")) {
+					System.out.println("Please Enter Process Number:");
+					try {
+						String procs = bufferRead.readLine();
+						numProcs = Integer.parseInt(procs);
+					} catch (NumberFormatException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				else if (Choice.equals("2")) {
+					System.out.println("Please Enter Pattern Configuration:");
+					try {
+						String pattern = bufferRead.readLine();
+						PatternSelection = Integer.parseInt(pattern);
+					} catch (NumberFormatException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				else if (Choice.equals("4")) {
+					if (numProcs > 0 && PatternSelection > 0) {
+
+						ProcessControl pc = new ProcessControl();
+						pc.CreateProcesses(PatternSelection, numProcs, mqm);
+						pc.startProcesses();
+					} else {
+						System.out.println("\n\nPlease Set all parameters before initiating the test!\n\n");
+					}
 				}
 
 			} catch (IOException e) {
@@ -62,57 +83,7 @@ public class Driver {
 		//
 		// pc.startProcesses();
 		//
-		// //System.out.print(mqm);
+		System.out.print(mqm);
 		// >>>>>>> upstream/master
-	}
-
-	private static void SetBufferSize(BufferedReader reader) {
-
-		System.out.print("Please Enter Buffer Size:");
-		try {
-			BufferSize = Integer.parseInt(reader.readLine());
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private static void SetPattern(BufferedReader reader) {
-
-		System.out.print("Please Enter Pattern Configuration:");
-		try {
-			int patternSelection = Integer.parseInt(reader.readLine());
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private static void Start() {
-
-		if (numProcs > 0 && BufferSize > 0 && PatternSelection > 0) {
-
-			MessageQueueManager mqm = new MessageQueueManager();
-			ProcessControl pc = new ProcessControl();
-			pc.CreateProcesses(PatternSelection, numProcs, mqm);
-			pc.startProcesses();
-		} else {
-			System.out
-					.println("\n\nPlease Set all parameters before initiating the test!\n\n");
-		}
-	}
-
-	private static void SetProcessNumber(BufferedReader reader) {
-
-		System.out.print("Please Enter Process Number:");
-		try {
-			numProcs = Integer.parseInt(reader.readLine());
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 }
