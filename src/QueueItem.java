@@ -3,6 +3,7 @@ public class QueueItem<E> {
 
     private E data;
     private QueueItem next;
+    private boolean isNotified = false;
 
     public QueueItem() {
         data = null;
@@ -29,6 +30,22 @@ public class QueueItem<E> {
 
     public E getData() {
         return data;
+    }
+
+    public synchronized void doWait() throws InterruptedException {
+        while(!isNotified){
+            this.wait();
+        }
+        this.isNotified = false;
+    }
+
+    public synchronized void doNotify() {
+        this.isNotified = true;
+        this.notify();
+    }
+
+    public boolean equals(Object o) {
+        return this == o;
     }
 
 
