@@ -5,46 +5,52 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MessageLock {
 
-    private AtomicInteger numWritersWaiting = new AtomicInteger(0);
-
+    private volatile AtomicInteger numWritersWaiting = new AtomicInteger(0);
     private final Lock lock = new ReentrantLock();
-    private final Condition writersWaiting = lock.newCondition();
+    private final Condition writersWriting = lock.newCondition();
     private final Condition readerReading = lock.newCondition();
 
 
     public void readLock() throws InterruptedException {
 
+        lock.lock();
         try {
             while (numWritersWaiting.get() > 0) {
-                writersWaiting.await();
+                synchronized (writersWriting) {
+                    writersWriting.await();
+                }
             }
-        } finally {
-            lock.lock();
-        }
+        } catch (Exception e) { System.err.println(e); }
 
     }
 
     public void readUnlock() {
 
-        readerReading.signal();
+        synchronized (readerReading) {
+            readerReading.signal();
+        }
         lock.unlock();
     }
 
     public void writeLock() throws InterruptedException {
 
+
+        lock.lock();
         numWritersWaiting.incrementAndGet();
-        
+
         try {
-            readerReading.await();
-        } finally {
-            lock.lock();
-        }
+            synchronized (readerReading) {
+                readerReading.await();
+            }
+        } catch (Exception e) { System.err.println(e); }
     }
 
     public void writeUnlock() {
 
-        numWritersWaiting.decrementAndGet();
-        writersWaiting.signal();
+        synchronized (writersWriting) {
+            numWritersWaiting.decrementAndGet();
+            writersWriting.signal();
+        }
         lock.unlock();
 
     }
