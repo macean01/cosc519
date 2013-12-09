@@ -1,8 +1,5 @@
 public class Process implements Runnable {
-
-
-        //int priority;//might be unnecessary
-        //String data;
+	
         MessageQueueManager mqm;
         String producerId;
         String consumerId;
@@ -23,7 +20,11 @@ public class Process implements Runnable {
         }
 
         public void run() {
-        	while (this.recvMessages < this.maxMessages) {	// need to fix this so everyone writes to a queue first and we don't deadlock on reading
+        	//initialize messageQueueAssociation
+        	Message init = new Message("init");
+        	processMessage(init);
+        	this.sendMessages++;
+        	while (this.recvMessages < this.maxMessages) {
         		if (this.sendMessages < this.maxMessages) {
         			Message m = new Message("Message: " + (this.sendMessages + 1) + " from: " + this.pid);
         			this.processMessage(m);
@@ -34,7 +35,6 @@ public class Process implements Runnable {
         		if (recv != null) {
         			this.recvMessages++;
         			System.out.println(recv);
-        			//System.out.print(mqm);
         		}
         	}
         }

@@ -7,6 +7,7 @@ public class MessageQueue {
 	LinkedList<Message> list;
 	int messages = 0;
 	boolean lock = false;
+	MessageLock myLock;
 
 	public MessageQueue(int id)
 	{
@@ -16,15 +17,34 @@ public class MessageQueue {
 
 	public void write(Message buff)
 	{
+//		try {
+//			if(myLock != null)
+//				myLock.writeLock();
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		list.push(buff);
 		messages++;
+//		if(myLock != null)
+//			myLock.writeUnlock();
 	}
 
 	public Message read()
 	{
 		if (messages > 0) {
 			messages--;
-			return list.pop();
+//			try {
+//				if(myLock != null)
+//					myLock.readLock();
+				Message mesTry = list.pop();
+//				if(myLock != null)
+//					myLock.readUnlock();
+				return mesTry;
+//			} catch (InterruptedException e) {
+//				
+//				e.printStackTrace();
+//			}
 		} else {
 			return null;
 		}

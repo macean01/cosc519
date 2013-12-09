@@ -33,7 +33,7 @@ public class MessageLock {
     public void writeLock() throws InterruptedException {
 
         numWritersWaiting.incrementAndGet();
-
+        
         try {
             readerReading.await();
         } finally {

@@ -49,12 +49,20 @@ public class ProcessControl {
 		}
 		else if(Pattern == PatternType.Pair){
 			int pairedProcs = numProcs/2;
-			for(int i = 1; i < pairedProcs;i++){
+			for(int i = 0; i < pairedProcs;i++){
 				String sendQueueHandle = mqm.createQueue();
 				String recQueueHandle = mqm.createQueue();
 				createProcess(mqm, sendQueueHandle, recQueueHandle, 8);
 				createProcess(mqm, recQueueHandle, sendQueueHandle, 8);
 			}
+		}
+	}
+
+	public void PrintMetrics() {
+		for(Process proc:processes){
+			System.out.println("Process#"+proc.pid);
+			System.out.println("Total messages sent: "+proc.sendMessages);
+			System.out.println("Total messages received: "+proc.recvMessages);
 		}
 	}
 }
