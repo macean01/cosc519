@@ -34,7 +34,7 @@ public class Process implements Runnable {
         		Message recv = this.recMessage();
         		if (recv != null) {
         			this.recvMessages++;
-        			System.out.println(recv);
+        			//System.out.println(recv);
         		}
         	}
         }

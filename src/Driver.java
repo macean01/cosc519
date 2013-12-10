@@ -7,6 +7,7 @@ public class Driver {
 	static Process[] myProcs;
 	static int BufferSize;
 	static int PatternSelection;
+	static int NumMessages = 8;
 
 	public static void main(String[] args) {
 
@@ -27,8 +28,9 @@ public class Driver {
 			System.out.println("COSC519 Message Queue Project Main Menu:\n"
 							+ "1. Set Proccess Number\n"
 							+ "2. Set Message Passing Pattern\n"
-							+ "3. Start Queue Simulation\n"
-							+ "4. Print MessageQueueManager");
+							+ "3. Set Number of Messages\n"
+							+ "4. Start Queue Simulation\n"
+							+ "5. Print MessageQueueManager");
 			try {
 
 				Choice = bufferRead.readLine();
@@ -54,13 +56,24 @@ public class Driver {
 						e.printStackTrace();
 					}
 				} else if (Choice.equals("3")) {
+						System.out.println("\nPlease Enter number of messages to send:");
+						try {
+							String pattern = bufferRead.readLine();
+							NumMessages = Integer.parseInt(pattern);
+						} catch (NumberFormatException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+				} else if (Choice.equals("4")) {
 					if (numProcs > 0 && PatternSelection > -1) {
-						pc.CreateProcesses(PatternSelection, numProcs, mqm);
+						pc.CreateProcesses(PatternSelection, numProcs, NumMessages, mqm);
 						pc.startProcesses();
+						break;
 					} else {
 						System.out.println("\nParameters do not meet requirement to initiate the test!\n\n");
 					}
-				} else if (Choice.equals("4")) {
+				} else if (Choice.equals("5")) {
 					System.out.println(mqm);
 				}
 
@@ -70,6 +83,6 @@ public class Driver {
 		}
 		System.out.println("\n***************************END SIM*******************************");
 		mqm.PrintMetrics();
-		pc.PrintMetrics();
+		//pc.PrintMetrics();
 	}
 }
