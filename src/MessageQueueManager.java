@@ -1,10 +1,13 @@
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.Set;
 
 public class MessageQueueManager {
 
 	public Hashtable<String, MessageQueue> queues;
+	private LinkedList<Message> readMessages = new LinkedList<Message>();
 	public int numQueues = 0;
 	public int maxQueues = 1024;
 	private int messagesSent = 0;
@@ -16,13 +19,13 @@ public class MessageQueueManager {
 	}
 
 	public String createQueue() {
-		if (this.numQueues >= this.maxQueues){
+		if (this.numQueues >= this.maxQueues) {
 			System.out.println("Reached max queues please reset test params");
 			return null;
 		}
 
 		MessageQueue newQueue = new MessageQueue(this.numQueues);
-		if(myLock!=null)
+		if (myLock != null)
 			newQueue.myLock = myLock;
 		this.queues.put(((Integer) numQueues).toString(), newQueue);
 		this.numQueues++;
@@ -47,18 +50,59 @@ public class MessageQueueManager {
 	public Message read(String messageQueue) {
 		if (this.queues.containsKey(messageQueue) == false)
 			return null;
-		else{
+		else {
 			Message returnMSG = this.queues.get(messageQueue).read();
-			if(returnMSG != null)
+			if (returnMSG != null) {
+				readMessages.add(returnMSG);
 				messagesRecv++;
+			}
 			return returnMSG;
 		}
 	}
-	
-	public void PrintMetrics(){
-		System.out.println("Total messages sent: "+messagesSent);
-		System.out.println("Total messages received: "+messagesRecv);
-		
+
+	public void PrintMetrics() {
+		System.out.println("Total messages sent: " + messagesSent);
+		System.out.println("Total messages received: " + messagesRecv);
+		System.out.println("Shortest message wait time: " + ShortestWaitTime());
+		System.out.println("Longest message wait time: " + LongestWaitTime());
+		System.out.println("Avg message wait time: " + AvgWaitTime());
+
+	}
+
+	private long AvgWaitTime() {
+		long currentTimespan = 0;
+		for(Message mes : readMessages){
+			currentTimespan += mes.creationTime - mes.readTime;
+		}
+		return currentTimespan;
+	}
+
+	private long LongestWaitTime() {
+		long longestLength = -1;
+		for(Message mes : readMessages){
+			long currentTimespan = mes.creationTime - mes.readTime;
+			if(longestLength == -1){
+				longestLength = currentTimespan;
+			}
+			else if(longestLength > currentTimespan){
+				longestLength = currentTimespan;
+			}
+		}
+		return longestLength;
+	}
+
+	private long ShortestWaitTime() {
+		long shortestLength = -1;
+		for(Message mes : readMessages){
+			long currentTimespan = mes.readTime - mes.creationTime;
+			if(shortestLength == -1){
+				shortestLength = currentTimespan;
+			}
+			else if(shortestLength > currentTimespan){
+				shortestLength = currentTimespan;
+			}
+		}
+		return shortestLength;
 	}
 
 	public String toString() {

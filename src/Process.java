@@ -1,3 +1,5 @@
+import java.util.Date;
+
 public class Process implements Runnable {
 	
         MessageQueueManager mqm;
@@ -33,6 +35,7 @@ public class Process implements Runnable {
 
         		Message recv = this.recMessage();
         		if (recv != null) {
+        			recv.readTime = System.currentTimeMillis();
         			this.recvMessages++;
         			System.out.println(recv);
         		}
