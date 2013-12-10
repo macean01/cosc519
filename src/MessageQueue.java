@@ -17,37 +17,38 @@ public class MessageQueue {
 
 	public void write(Message buff)
 	{
-//		try {
-//			if(myLock != null)
-//				myLock.writeLock();
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		try {
+			if(myLock != null)
+				myLock.writeLock();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		list.push(buff);
 		messages++;
-//		if(myLock != null)
-//			myLock.writeUnlock();
+		if(myLock != null)
+			myLock.writeUnlock();
 	}
 
 	public Message read()
 	{
 		if (messages > 0) {
 			messages--;
-//			try {
-//				if(myLock != null)
-//					myLock.readLock();
+			try {
+				if(myLock != null)
+					myLock.readLock();
 				Message mesTry = list.pop();
-//				if(myLock != null)
-//					myLock.readUnlock();
+				if(myLock != null)
+					myLock.readUnlock();
 				return mesTry;
-//			} catch (InterruptedException e) {
-//				
-//				e.printStackTrace();
-//			}
+			} catch (InterruptedException e) {
+
+				e.printStackTrace();
+			}
 		} else {
 			return null;
 		}
+        return null;
 	}
 
 	public boolean hasMessages()

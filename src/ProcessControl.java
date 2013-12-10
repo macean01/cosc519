@@ -21,13 +21,28 @@ public class ProcessControl {
 	}
 
 	public void startProcesses() {
+		long startTime = System.currentTimeMillis();
+		Thread threads[] = new Thread[processes.size()];
+		int i = 0;
 		for (Process process : processes) {
 			Thread t = new Thread(process);
+			threads[i++] = t;
 			t.start();
 		}
+		for (i = 0; i < processes.size(); i++) {
+			try {
+				threads[i].join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		long endTime = System.currentTimeMillis();
+		
+		System.out.println("Time spent (ms): " + (endTime - startTime));
 	}
 		
-	public void CreateProcesses(int pattern,int numProcs,MessageQueueManager mqm){
+	public void CreateProcesses(int pattern,int numProcs,int numMessages, MessageQueueManager mqm){
 		if(pattern == PatternType.Chain){
 			//set send/receiving queue handles
 			for(int i = 0; i < numProcs;i++){
@@ -35,15 +50,15 @@ public class ProcessControl {
 					//beginning
 					String queue1 = mqm.createQueue();
 					String queue2 = mqm.createQueue();
-					createProcess(mqm, queue1, queue2, 8);
+					createProcess(mqm, queue1, queue2, numMessages);
 				}
 				else if(i == numProcs - 1 ){
 					//end
-					createProcess(mqm,processes.get(0).consumerId,processes.get(i-1).producerId, 8);
+					createProcess(mqm,processes.get(0).consumerId,processes.get(i-1).producerId, numMessages);
 				}
 				else{
 					//middle
-					createProcess(mqm, mqm.createQueue(), processes.get(i-1).producerId, 8);
+					createProcess(mqm, mqm.createQueue(), processes.get(i-1).producerId, numMessages);
 				}
 			}
 		}
@@ -52,8 +67,8 @@ public class ProcessControl {
 			for(int i = 0; i < pairedProcs;i++){
 				String sendQueueHandle = mqm.createQueue();
 				String recQueueHandle = mqm.createQueue();
-				createProcess(mqm, sendQueueHandle, recQueueHandle, 8);
-				createProcess(mqm, recQueueHandle, sendQueueHandle, 8);
+				createProcess(mqm, sendQueueHandle, recQueueHandle, numMessages);
+				createProcess(mqm, recQueueHandle, sendQueueHandle, numMessages);
 			}
 		}
 	}

@@ -37,7 +37,7 @@ public class Process implements Runnable {
         		if (recv != null) {
         			recv.readTime = System.currentTimeMillis();
         			this.recvMessages++;
-        			System.out.println(recv);
+        			//System.out.println(recv);
         		}
         	}
         }
