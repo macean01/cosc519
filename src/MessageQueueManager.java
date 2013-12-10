@@ -42,6 +42,7 @@ public class MessageQueueManager {
 			return;
 		else {
 			MessageQueue messageWriter = this.queues.get(messageQueue);
+			message.creationTime = System.nanoTime();
 			messageWriter.write(message);
 			messagesSent++;
 		}
@@ -53,6 +54,7 @@ public class MessageQueueManager {
 		else {
 			Message returnMSG = this.queues.get(messageQueue).read();
 			if (returnMSG != null) {
+				returnMSG.readTime = System.nanoTime();
 				readMessages.add(returnMSG);
 				messagesRecv++;
 			}
@@ -63,28 +65,29 @@ public class MessageQueueManager {
 	public void PrintMetrics() {
 		System.out.println("Total messages sent: " + messagesSent);
 		System.out.println("Total messages received: " + messagesRecv);
-		System.out.println("Shortest message wait time: " + ShortestWaitTime());
-		System.out.println("Longest message wait time: " + LongestWaitTime());
-		System.out.println("Avg message wait time: " + AvgWaitTime());
+		System.out.println("Shortest message wait time(nano): " + ShortestWaitTime());
+		System.out.println("Longest message wait time(nano): " + LongestWaitTime());
+		System.out.println("Avg message wait time(nano): " + AvgWaitTime());
 
 	}
 
 	private long AvgWaitTime() {
 		long currentTimespan = 0;
 		for(Message mes : readMessages){
-			currentTimespan += mes.creationTime - mes.readTime;
+			long timespan = mes.readTime - mes.creationTime;
+			currentTimespan += timespan;
 		}
-		return currentTimespan;
+		return currentTimespan/readMessages.size();
 	}
 
 	private long LongestWaitTime() {
 		long longestLength = -1;
 		for(Message mes : readMessages){
-			long currentTimespan = mes.creationTime - mes.readTime;
+			long currentTimespan = mes.readTime - mes.creationTime;
 			if(longestLength == -1){
 				longestLength = currentTimespan;
 			}
-			else if(longestLength > currentTimespan){
+			else if(longestLength < currentTimespan){
 				longestLength = currentTimespan;
 			}
 		}
@@ -94,7 +97,7 @@ public class MessageQueueManager {
 	private long ShortestWaitTime() {
 		long shortestLength = -1;
 		for(Message mes : readMessages){
-			long currentTimespan = mes.readTime - mes.creationTime;
+			long currentTimespan =  mes.readTime - mes.creationTime;
 			if(shortestLength == -1){
 				shortestLength = currentTimespan;
 			}

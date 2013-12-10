@@ -12,7 +12,6 @@ public class Message {
 
 	public Message(String data) {
 		message_data = data;
-		creationTime = System.currentTimeMillis();
 	}
 
 	public String getMessage_data() {
